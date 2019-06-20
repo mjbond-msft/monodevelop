@@ -356,7 +356,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public LoadingSearchProvidersCategory () : base (GettextCatalog.GetString ("Loading"))
 			{
-				
+				this.sortOrder = LoadingCategoryOrder;
 			}
 
 			public void Add (SearchCategory provider)
@@ -399,6 +399,17 @@ namespace MonoDevelop.Components.MainToolbar
 				return tag == "loading";
 			}
 
+		}
+
+		int GetIndexFromCategory (List<Tuple<SearchCategory, IReadOnlyList<SearchResult>>> results, SearchCategory category)
+		{
+			for (int i = 0; i < results.Count; i++) {
+				if (results[i].Item1.SortOrder >= category.SortOrder) {
+					return i;
+				}
+			}
+			//last element
+			return results.Count - 1;
 		}
 
 		public void Update (SearchPopupSearchPattern pattern)
@@ -462,7 +473,9 @@ namespace MonoDevelop.Components.MainToolbar
 							return;
 						}
 
-						newResults.Add (Tuple.Create (col.Category, col.Results));
+						//we want order the new category processed 
+						var indexToInsert = GetIndexFromCategory (newResults, col.Category);
+						newResults.Insert(indexToInsert, Tuple.Create (col.Category, col.Results));
 
 						//que want remove it all the failed results from the search
 						var calculatedResult = GetTopResult (newResults);
@@ -482,7 +495,9 @@ namespace MonoDevelop.Components.MainToolbar
 							newResults.Remove (newResults.FirstOrDefault (s => s.Item1 == searchProvidersCategory));
 
 							if (current < total) {
-								newResults.Add (new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
+								//we want order the new category processed 
+								indexToInsert = GetIndexFromCategory (newResults, searchProvidersCategory);
+								newResults.Insert (indexToInsert, new Tuple<SearchCategory, IReadOnlyList<SearchResult>> (searchProvidersCategory, searchProvidersCategory.Values));
 							}
 						}
 
