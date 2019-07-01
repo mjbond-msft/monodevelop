@@ -222,13 +222,15 @@ namespace MonoDevelop.VersionControl.Git
 				{
 					case StashResultType.Error:
 						IdeApp.Workbench.StatusBar.ShowError (msg);
+					    MessageService.ShowError (msg);
 						break;
 					case StashResultType.Message:
 						IdeApp.Workbench.StatusBar.ShowMessage (msg);
 						break;
 					case StashResultType.Warning:
 						IdeApp.Workbench.StatusBar.ShowWarning (msg);
-						break;
+					    MessageService.ShowWarning (msg);
+					    break;
 				}
 			});
 		}
