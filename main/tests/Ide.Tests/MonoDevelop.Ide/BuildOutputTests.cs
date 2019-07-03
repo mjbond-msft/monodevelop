@@ -134,18 +134,20 @@ namespace MonoDevelop.Ide
 		[Test]
 		public async Task CustomProject_SearchCanBeCanceled ()
 		{
-			BuildOutputNode firstMatch = null;
-
 			var bo = GenerateCustomBuild (10);
-
 			var search = new BuildOutputDataSearch (bo.GetRootNodes (true));
-			for (int i = 0; i < 100; i++) {
-				await Task.WhenAll (Task.Run (async () => firstMatch = await search.FirstMatch ("Message ")),
-									Task.Delay (100).ContinueWith (t => search.Cancel ()));
 
-				Assert.Null (firstMatch, "Got a first match while search was canceled");
-				Assert.True (search.IsCanceled, "Search was not canceled");
-			}
+			var searchTask = search.FirstMatch ("Message ");
+			search.Cancel ();
+
+			var firstMatch = await searchTask;
+			Assert.Null (firstMatch, "Got a first match while search was canceled");
+			Assert.True (search.IsCanceled, "Search was not canceled");
+
+			searchTask = search.FirstMatch ("Message ");
+			firstMatch = await searchTask;
+			Assert.NotNull (firstMatch, "Got a first match while search was canceled");
+			Assert.False (search.IsCanceled, "Search was not canceled");
 		}
 
 		[Test]
