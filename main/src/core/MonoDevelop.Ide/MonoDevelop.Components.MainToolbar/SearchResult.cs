@@ -273,7 +273,7 @@ namespace MonoDevelop.Components.MainToolbar
 #if !MAC
 						route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
 #endif
-						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (route));
+						ci = IdeApp.CommandService.GetCommandInfo (command.Id, route);
 					}).Wait ();
 				}
 				return ci.Enabled && ci.Visible;
