@@ -88,7 +88,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal bool ProcessKey (Key key, ModifierKeys state)
 		{
-			Console.WriteLine ("Processing key");
 			return Content.ProcessKey (key, state);
 		}
 
