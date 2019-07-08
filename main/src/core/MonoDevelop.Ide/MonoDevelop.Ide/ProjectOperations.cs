@@ -710,10 +710,19 @@ namespace MonoDevelop.Ide
 
 			IdeApp.Workbench.EnsureLayout ();
 			var newProjectDialog = new NewProjectDialogController ();
+
+			static void projectCreationWindowClosed (object s, EventArgs e)
+			{
+				WelcomePage.WelcomePageService.HideWelcomePageOrWindow ();
+			}
+			newProjectDialog.ProjectCreationWindowClosed += projectCreationWindowClosed;
+
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.SelectedTemplateId = defaultTemplate;
 			newProjectDialog.ShowTemplateSelection = showTemplateSelection;
-			return newProjectDialog.Show ();
+			var dialogResult = await newProjectDialog.ShowAsync ();
+			newProjectDialog.ProjectCreationWindowClosed -= projectCreationWindowClosed;
+			return dialogResult;
 		}
 		
 		public Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace)

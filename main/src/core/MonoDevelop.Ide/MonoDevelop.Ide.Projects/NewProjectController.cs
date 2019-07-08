@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		public event EventHandler ProjectCreationFailed;
 		public event EventHandler ProjectCreated;
+		public event EventHandler ProjectCreationWindowClosed;
 
 		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
@@ -164,6 +165,7 @@ namespace MonoDevelop.Ide.Projects
 			GetVersionControlHandler ();
 		}
 
+		[Obsolete ("Use ShowAsync () instead")]
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
@@ -178,6 +180,28 @@ namespace MonoDevelop.Ide.Projects
 			dialog.RegisterController (this);
 
 			dialog.ShowDialog ();
+
+			imageProvider.Dispose ();
+
+			return IsNewItemCreated;
+		}
+
+		public async Task<bool> ShowAsync ()
+		{
+			projectConfiguration.CreateSolution = ParentFolder == null;
+			LoadTemplateCategories ();
+			SetDefaultSettings ();
+			SelectDefaultTemplate ();
+
+			CreateFinalConfigurationPage ();
+			CreateWizardProvider ();
+
+			dialog = CreateNewProjectDialog ();
+			dialog.RegisterController (this);
+
+			dialog.ShowDialog ();
+
+			await EnsureCreationFinishedAsync ();
 
 			imageProvider.Dispose ();
 
@@ -613,6 +637,8 @@ namespace MonoDevelop.Ide.Projects
 
 		public async Task Create ()
 		{
+			projectCreated = new TaskCompletionSource<bool> ();
+
 			if (wizardProvider.HasWizard)
 				wizardProvider.BeforeProjectIsCreated ();
 
@@ -675,7 +701,8 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			dialog.CloseDialog ();
-
+			ProjectCreationWindowClosed?.Invoke (this, EventArgs.Empty);
+		
 			if (ParentFolder != null)
 				await IdeApp.ProjectOperations.SaveAsync (ParentFolder.ParentSolution);
 			else
@@ -709,13 +736,21 @@ namespace MonoDevelop.Ide.Projects
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 
-			var tcs = new TaskCompletionSource<bool> ();
 			Gtk.Application.Invoke ((sender, args) => {
 				ProjectCreated?.Invoke (this, EventArgs.Empty);
-				tcs.SetResult (true);
+				projectCreated.SetResult (true);
 			});
-			await tcs.Task;
+			await projectCreated.Task;
 		}
+
+		async Task EnsureCreationFinishedAsync ()
+		{
+			if (projectCreated?.Task == null)
+				return;
+			await projectCreated.Task;
+		}
+
+		TaskCompletionSource<bool> projectCreated;
 
 		public WizardPage CurrentWizardPage {
 			get {
