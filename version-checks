@@ -16,7 +16,7 @@ script_name=./`basename $0`
 DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
-DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
+DEP_MODULE[0]=git@github.com:mjbond-msft/md-addins.git
 DEP_NEEDED_VERSION[0]=baa0f1b8f7c20976a88c24599f9bf5642146e34f
 DEP_BRANCH_AND_REMOTE[0]="release-8.3-catalina-build origin/release-8.3-catalina-build"
 
