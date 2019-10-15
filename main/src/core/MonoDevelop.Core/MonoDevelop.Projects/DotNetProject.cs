@@ -1131,13 +1131,15 @@ namespace MonoDevelop.Projects
 				var monitor = new ProgressMonitor ();
 
 				var context = new TargetEvaluationContext ();
-				context.ItemsToEvaluate.Add ("_ReferencesFromRAR");
-				context.ItemsToEvaluate.Add ("_ProjectReferencesFromRAR");
+				context.ItemsToEvaluate.Add ("ReferencePath");
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
 				context.GlobalProperties.SetValue ("Silent", true);
 				context.GlobalProperties.SetValue ("DesignTimeBuild", true);
+				// Even though some targets may fail it may still be possible for the main resolve targets to return
+				// information so we set ContinueOnError. This matches VS on Windows behaviour.
+				context.GlobalProperties.SetValue ("ContinueOnError", "ErrorAndContinue");
 
 				var result = await RunTargetInternal (monitor, "ResolveAssemblyReferencesDesignTime;ResolveProjectReferencesDesignTime", configuration, context);
 				refs = result.Items.Select (i => new AssemblyReference (i.Include, i.Metadata)).ToList ();
@@ -1199,6 +1201,9 @@ namespace MonoDevelop.Projects
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
+				// Even though some targets may fail it may still be possible for the main resolve target to return
+				// information so we set ContinueOnError. This matches VS on Windows behaviour.
+				context.GlobalProperties.SetValue ("ContinueOnError", "ErrorAndContinue");
 
 				var result = await RunTargetInternal (monitor, "ResolvePackageDependenciesDesignTime", configuration, context);
 
@@ -1268,6 +1273,9 @@ namespace MonoDevelop.Projects
 				context.BuilderQueue = BuilderQueue.ShortOperations;
 				context.LoadReferencedProjects = false;
 				context.LogVerbosity = MSBuildVerbosity.Quiet;
+				// Even though some targets may fail it may still be possible for the main resolve target to return
+				// information so we set ContinueOnError. This matches VS on Windows behaviour.
+				context.GlobalProperties.SetValue ("ContinueOnError", "ErrorAndContinue");
 
 				var result = await RunTargetInternal (monitor, "ResolveFrameworkReferences", configuration, context);
 

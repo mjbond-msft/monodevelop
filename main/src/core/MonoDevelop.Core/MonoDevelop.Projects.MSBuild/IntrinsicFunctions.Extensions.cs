@@ -1,10 +1,10 @@
 //
-// PropertyPadItem.cs
+// IntrinsicFunctions.Extensions.cs
 //
 // Author:
-//       jmedrano <josmed@microsoft.com>
+//       Marius Ungureanu <maungu@microsoft.com>
 //
-// Copyright (c) 2018 
+// Copyright (c) 2019 Microsoft Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-#if MAC
-
 using System;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
-using Xamarin.PropertyEditing;
-
-namespace MonoDevelop.DesignerSupport
+namespace Microsoft.Build.Evaluation
 {
-	class PropertyPadItem
+	internal static partial class IntrinsicFunctions
 	{
-		public PropertyPadItem (object target, object [] providers)
-		{
-			Target = target;
-			Providers = providers;
-		}
-
-		public object Target { get; }
-		public object[] Providers { get; }
-
-		public async Task<ValueInfo<T>> GetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo propertyInfo)
-		{
-			T value = await propertyInfo.GetValueAsync<T> (this);
-			return new ValueInfo<T> {
-				Value = value,
-				Source = ValueSource.Local,
-				//ValueDescriptor = valueInfoString.ValueDescriptor,
-				//CustomExpression = valueString
-			};
-		}
-
-		public void SetPropertyValueInfoAsProppyType<T> (DescriptorPropertyInfo info, ValueInfo<T> value, PropertyVariation variations)
-		{
-			try {
-				info.SetValue (this, value.Value);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error setting the value", ex);
-			}
-		}
+		// Similar to https://github.com/microsoft/msbuild/pull/4731
+		// This avoids creating a string copy for the purpose of evaluation in metadata items.
+		internal static string Copy (string value) => value;
 	}
 }
-
-#endif
