@@ -1,4 +1,4 @@
-# Let's try this again with the v2.* task
+# Cleanup for more tiggering
 # So many updates, so little time
 
 **MonoDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
