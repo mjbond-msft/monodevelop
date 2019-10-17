@@ -16,9 +16,9 @@ script_name=./`basename $0`
 DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
-DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
+DEP_MODULE[0]=git@github.com:mjbond-msft/md-addins.git
 DEP_NEEDED_VERSION[0]=1a3660ab8ed133e4a027f4a74900a3b027fed953
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_BRANCH_AND_REMOTE[0]="bond/trigger-fixes origin/bond/trigger-fixes"
 
 # heap-shot
 DEP[1]=heap-shot
