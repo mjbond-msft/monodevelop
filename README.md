@@ -1,4 +1,4 @@
-# Copy tests: Build.DefinitionName to Release.PrimaryArtifactSourceAlias
+# Test.Assembly: Build.DefinitionName to Release.PrimaryArtifactSourceAlias
 # So many updates, so little time
 
 **MonoDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
